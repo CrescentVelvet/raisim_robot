@@ -10,34 +10,30 @@ void setupCallback() {
   vis->getLight()->setCastShadows(true);
   vis->getLightNode()->setPosition(3, 3, 3);
 
-  /// load textures
+  /// 建立地图
   vis->addResourceDirectory(vis->getResourceDir() + "/material/checkerboard");
   vis->loadMaterialFile("checkerboard.material");
 
-  vis->addResourceDirectory(vis->getResourceDir() + "/material/skybox/violentdays");
-  vis->loadMaterialFile("violentdays.material");
-
-  /// shdow setting
+  /// shadow setting
   vis->getSceneManager()->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_ADDITIVE);
   vis->getSceneManager()->setShadowTextureSettings(2048, 3);
 
   /// scale related settings!! Please adapt it depending on your map size
-  // beyond this distance, shadow disappears
+  // beyond this distance, shadow disappears在这段距离之外，阴影消失了
   vis->getSceneManager()->setShadowFarDistance(10);
-  // size of contact points and contact forces
+  // size of contact points and contact forces接触点尺寸和接触力
   vis->setContactVisObjectSize(0.03, 0.2);
-  // speed of camera motion in freelook mode
-  vis->getCameraMan()->setTopSpeed(5);
+  // speed of camera motion in freelook modefreelook模式下的相机运动速度
+  vis->getCameraMan()->setTopSpeed(1);
 
-  /// skybox
+  /// 建立天空球
   Ogre::Quaternion quat;
   quat.FromAngleAxis(Ogre::Radian(M_PI_2), {1., 0, 0});
   vis->getSceneManager()->setSkyBox(true,
-                                    "skybox/violentdays",
+                                    "Examples/StormySkyBox",
                                     500,
                                     true,
-                                    quat,
-                                    Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+                                    quat);
 }
 
 int main(int argc, char **argv) {
@@ -45,6 +41,7 @@ int main(int argc, char **argv) {
   raisim::World world;
   world.setTimeStep(0.002);
 
+  /// just a shortcut
   auto vis = raisim::OgreVis::get();
 
   /// these method must be called before initApp
@@ -58,26 +55,28 @@ int main(int argc, char **argv) {
   /// starts visualizer thread
   vis->initApp();
 
-  /// create raisim objects
-  auto ground = world.addGround();
-
+  /// 创建机器人模型
   auto robot = world.addArticulatedSystem(raisim::loadResource("dancer_model/dancer_urdf_model.urdf"));
-  robot->setName("atlas");
+  robot->setName("dancer_robot");
+
+  /// 加载地图图片
+  auto ground = world.addGround();
+  ground->setName("checkerboard");
+  vis->createGraphicalObject(ground, 10, "floor", "robot_world");
+  auto robot_visual = vis->createGraphicalObject(robot, "dancer_robot");
+
+  /// ？
   Eigen::VectorXd gc(36);
   gc.setZero();
   gc.segment<7>(0) << 0, 0, 1, 1, 0, 0, 0;
-
   robot->setGeneralizedCoordinate(gc);
 
-  /// create visualizer objects
-  vis->createGraphicalObject(ground, 10, "floor", "checkerboard_green_transparent");
-  auto robot_visual = vis->createGraphicalObject(robot, "atlas");
-
+  /// 选择初始视角
   vis->select(robot_visual->at(0));
   vis->getCameraMan()->setYawPitchDist(Ogre::Radian(0), Ogre::Radian(-1.f), 10);
 
-  auto atlasFromWorld = world.getObject("atlas");
-  std::cout<<"atlas name "<<atlasFromWorld->getName()<<std::endl;
+  auto dancerFromWorld = world.getObject("dancer_robot");
+  std::cout<<"dancer_robot name is "<<dancerFromWorld->getName()<<std::endl;
 
   /// run the app
   vis->run();

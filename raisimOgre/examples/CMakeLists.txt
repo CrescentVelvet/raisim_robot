@@ -29,8 +29,8 @@ create_executable(creatingRobotUsingCPP src/robots/creatingRobotUsingCPP.cpp)
 create_executable(dancer_robot src/robots/dancer_robot.cpp)
 
 # remote
-create_executable(remoteVisualzation_server src/remote/server.cpp)
-create_executable(remoteVisualzation_client src/remote/client.cpp)
+#create_executable(remoteVisualzation_server src/remote/server.cpp)
+#create_executable(remoteVisualzation_client src/remote/client.cpp)
 
 # primitives
 create_executable(zurichHeightMap src/primitives/heightMapFromPng.cpp)
@@ -57,8 +57,6 @@ set(EXAMPLE_BINS
   primitives
   kinova
   atlas
-  remoteVisualzation_server
-  remoteVisualzation_client
   newtonsCradle
   dancer_robot
 )
