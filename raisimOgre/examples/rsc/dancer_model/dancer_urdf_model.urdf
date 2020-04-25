@@ -1153,8 +1153,8 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0.0069030606371967 -0.0385611288608892 0.0368864105375638"
+        rpy="-1.57 0 0" />
       <geometry>
         <mesh
           filename="leg4_right.stl" />
